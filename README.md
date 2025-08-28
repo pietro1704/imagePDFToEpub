@@ -1,107 +1,73 @@
-# Image PDF to EPUB Converter
+# image-pdf-to-epub
 
-Converte PDFs de imagem para EPUB usando OCR de alta qualidade.
+Converte PDFs baseados em imagem para **PDF somente texto** e **EPUB**, usando **Tesseract.js** para OCR e **GraphicsMagick (gm) + Ghostscript (gs)** para rasterizar as páginas do PDF.
 
-## Características
+---
 
-- 🔍 **OCR de Alta Qualidade**: Usa Tesseract.js com configurações otimizadas
-- 📸 **Pré-processamento de Imagem**: Melhora a qualidade das imagens antes do OCR
-- 📄 **Gera PDF de Texto**: Cria um PDF somente texto com o conteúdo extraído
-- 📚 **Conversão para EPUB**: Converte o texto extraído para formato EPUB
-- 🌍 **Suporte Multilíngue**: Português e Inglês por padrão
-- ⚡ **Processamento Otimizado**: Configurações para máxima precisão
+## Requisitos nativos
 
-## Pré-requisitos
+> Estes binários são obrigatórios e precisam estar no `PATH` do sistema.
 
-- Node.js (versão 16 ou superior)
-- npm ou yarn
+* **macOS**: `brew install graphicsmagick ghostscript`
+* **Ubuntu/Debian**: `sudo apt-get update && sudo apt-get install -y graphicsmagick ghostscript`
+* **Windows (Admin PowerShell)**: `choco install graphicsmagick ghostscript -y`
+
+> O projeto roda um *preflight* e falha cedo com instruções de instalação se detectar ausência de `gm`/`gs`.
+
+---
 
 ## Instalação
 
 ```bash
 npm install
+npm run setup
+npm run doctor   # valida gm + gs
 ```
+
+---
 
 ## Uso
 
 ```bash
-# Converter um PDF
-node index.js caminho/para/seu/arquivo.pdf
-
-# Exemplo
-node index.js ./documento.pdf
+# coloque caminhos com espaço entre aspas
+node index.js "/caminho/para/arquivo.pdf"
 ```
 
-## Outputs
+### Saída
 
-O aplicativo gera dois arquivos na pasta `output/`:
+* `output/<nome>_text.pdf` – PDF com o texto reconhecido (recriado via pdf-lib)
+* `output/<nome>.epub` – EPUB com um capítulo por página (texto OCR)
 
-1. **arquivo_text.pdf** - PDF somente texto com o conteúdo extraído via OCR
-2. **arquivo.epub** - Arquivo EPUB para leitura em e-readers
+---
 
-## Configurações de OCR
+## Configuração
 
-O aplicativo usa as seguintes configurações para máxima qualidade:
+Edite **config.js** para ajustar:
 
-- **Densidade**: 300 DPI para conversão de PDF para imagem
-- **Resolução**: 2480x3508 pixels (A4 em alta resolução)
-- **Pré-processamento**: Escala de cinza, normalização, nitidez
-- **OCR Engine**: LSTM (mais preciso)
-- **Idiomas**: Português e Inglês
+* Resolução/dimensão de rasterização (`pdfToImage`)
+* Pré-processamento da imagem (tons de cinza, normalize, sharpen, brilho/contraste)
+* Idiomas do Tesseract (padrão `por+eng`)
+* Layout do PDF de texto (fonte, tamanho, margens)
+* CSS/idioma do EPUB
 
-## Estrutura de Pastas
+---
 
-```
-imagePDFToEpub/
-├── index.js           # Aplicativo principal
-├── package.json       # Dependências
-├── temp/             # Arquivos temporários (criada automaticamente)
-└── output/           # Arquivos de saída (criada automaticamente)
-```
+## Solução de problemas
 
-## Dependências Principais
+* **Erro `gm identify ... binaries can't be found`**: instale `graphicsmagick` e `ghostscript` (seção *Requisitos nativos*). Rode `npm run doctor`.
+* **Caminho com espaços**: use aspas em volta do caminho do PDF.
+* **OCR lento**: reduza `pdfToImage.density` ou processe um subconjunto de páginas (implementar range por página é simples – peça para adicionar uma flag `--pages`).
 
-- **tesseract.js**: OCR engine
-- **pdf2pic**: Conversão de PDF para imagem
-- **pdf-lib**: Criação de PDFs
-- **epub-gen**: Geração de EPUBs
-- **sharp**: Processamento de imagens
-- **jimp**: Manipulação adicional de imagens
+---
 
-## Exemplo de Saída
+## Scripts
 
-```
-📖 Image PDF to EPUB Converter
-Converting PDF to images...
-Converted 10 pages to images
+* `npm run setup` – cria `.tmp/` e `output/`
+* `npm run doctor` – verifica `gm`/`gs`
+* `npm run convert` – alias para `node index.js`
 
-Processing page 1/10
-Preprocessing image: page.1.png
-Performing OCR on: page.1_processed.png
-OCR Progress: 100%
-Page 1 OCR confidence: 95.67%
+---
 
-...
+## Licença
 
-Creating text-only PDF...
-Creating EPUB...
-
-✅ Conversion completed successfully!
-⏱️  Total time: 2.45 minutes
-📄 Text PDF: ./output/documento_text.pdf
-📚 EPUB: ./output/documento.epub
-```
-
-## Limitações
-
-- PDFs devem conter imagens de texto (não texto selecionável)
-- Melhor qualidade com imagens de alta resolução
-- Tempo de processamento varia com o número de páginas
-- Requer boa qualidade de imagem para OCR preciso
-
-## Resolução de Problemas
-
-1. **Erro "File not found"**: Verifique o caminho do arquivo
-2. **OCR com baixa precisão**: Use PDFs de maior qualidade
-3. **Falta de memória**: Processe PDFs menores por vez
-4. **Dependências faltando**: Execute `npm install` novamente
+MIT

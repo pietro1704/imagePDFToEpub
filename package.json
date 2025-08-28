@@ -1,36 +1,24 @@
 {
   "name": "image-pdf-to-epub",
   "version": "1.0.0",
-  "description": "Convert image PDFs to EPUB using OCR",
-  "main": "index.js",
   "type": "module",
+  "description": "Convert image-based PDFs to text-only PDFs and EPUBs using Tesseract OCR (gm + gs).",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "node test.js",
-    "example": "node example.js",
-    "test-convert": "node index.js test.pdf",
-    "clean": "rm -rf temp output test_temp test_output && mkdir temp output",
-    "setup": "mkdir -p temp output"
+    "setup": "mkdir -p .tmp output || (powershell -NoProfile -Command \"New-Item -ItemType Directory -Force .tmp, output >$null\")",
+    "doctor": "node scripts/doctor.mjs",
+    "convert": "node index.js",
+    "start": "node index.js"
   },
   "dependencies": {
-    "tesseract.js": "^5.0.4",
-    "pdf2pic": "^3.1.1",
-    "pdf-lib": "^1.17.1",
     "epub-gen": "^0.1.0",
-    "jimp": "^0.22.10",
-    "sharp": "^0.32.6",
-    "fs-extra": "^11.2.0"
+    "fs-extra": "^11.2.0",
+    "pdf-lib": "^1.17.1",
+    "pdf2pic": "^3.1.2",
+    "sharp": "^0.33.3",
+    "tesseract.js": "^5.1.0"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
+  "engines": {
+    "node": ">=18"
   },
-  "keywords": [
-    "pdf",
-    "epub",
-    "ocr",
-    "conversion"
-  ],
-  "author": "",
   "license": "MIT"
 }
